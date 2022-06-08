@@ -24,7 +24,7 @@ public class CursorDisplayer : MonoBehaviour
     
     private void Awake()
     {
-        _cursorAnimator = this.GetComponent<Animator>();
+        _cursorAnimator = GetComponent<Animator>();
 
         _backgroundRectTransform = cursorBackground.GetComponent<RectTransform>();
         _pointerRectTransform = cursorPointer.GetComponent<RectTransform>();
@@ -41,7 +41,7 @@ public class CursorDisplayer : MonoBehaviour
     public void CursorDragEnd()
     {
         _cursorAnimator.SetTrigger("FadeOut");
-        StartCoroutine(MovePointerToOrigin());
+        StartCoroutine(MovePointerToOriginCoroutine());
     }
 
     public void SetBackgroundPosition(Vector2 position)
@@ -62,7 +62,7 @@ public class CursorDisplayer : MonoBehaviour
         #endif
     }
 
-    private IEnumerator MovePointerToOrigin()
+    private IEnumerator MovePointerToOriginCoroutine()
     {
         while (_pointerPosition != _backgroundPosition)
         {

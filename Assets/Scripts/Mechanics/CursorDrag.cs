@@ -4,20 +4,24 @@ using UnityEngine;
 
 public class CursorDrag : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject _ball;
-    [SerializeField]
-    private float _minDragMagnitude = .15f;
+    [SerializeField] private GameObject ball;
+    [SerializeField] private float minDragMagnitude = .15f;
 
+    private BallPhysics _ballPhysics;
     private CursorDisplayer _cursorDisplayer;
 
     private bool _isDragging;
     private Vector3 _startPoint;
     private Vector3 _endPoint;
 
+    private Vector3 _ballSpawnPosition;
+
     private void Awake()
     {
         _cursorDisplayer = GetComponent<CursorDisplayer>();
+        _ballPhysics = ball.GetComponent<BallPhysics>();
+
+        _ballSpawnPosition = ball.transform.position;
     }
 
     private void Update()
@@ -33,25 +37,18 @@ public class CursorDrag : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _isDragging = false;
-            _endPoint = Input.mousePosition;
             
-            Vector2 dragVector = _cursorDisplayer.GetDragVector;
-
-            if(dragVector.magnitude > _minDragMagnitude)
-            {
-                Debug.Log("Vector: " + dragVector);
-                Debug.Log("Magnitude:" + dragVector.magnitude);
-
-                Rigidbody ballRigidbody = _ball.GetComponent<Rigidbody>();
-                ballRigidbody.velocity = Vector3.zero;
-                ballRigidbody.AddForce(new Vector3(dragVector.x, 1, dragVector.y) * -10, ForceMode.Impulse);
-            }
+            _ballPhysics.Move();
+            
             _cursorDisplayer.CursorDragEnd();
         }
 
         if (_isDragging)
         {
             _cursorDisplayer.SetCursorPosition(Input.mousePosition);
+            
+            Vector2 dragVector = _cursorDisplayer.GetDragVector;
+            _ballPhysics.CalculateTrajectory(dragVector);
         }
     }
 }
