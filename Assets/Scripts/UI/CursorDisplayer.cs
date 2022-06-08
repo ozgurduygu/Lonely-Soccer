@@ -9,7 +9,7 @@ public class CursorDisplayer : MonoBehaviour
     private GameObject cursorPointer;
 
     [SerializeField]
-    private float cursorReturnSpeed = 1000;
+    private float cursorReturnSpeed = 500;
 
     private Animator _cursorAnimator;
 
@@ -20,7 +20,7 @@ public class CursorDisplayer : MonoBehaviour
     private Vector2 _pointerPosition;
     private float _pointerBoundaryRadius;
 
-    public Vector2 GetDragValue { get { return (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;} }
+    public Vector2 GetDragVector { get { return (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;} }
     
     private void Awake()
     {
@@ -29,20 +29,19 @@ public class CursorDisplayer : MonoBehaviour
         _backgroundRectTransform = cursorBackground.GetComponent<RectTransform>();
         _pointerRectTransform = cursorPointer.GetComponent<RectTransform>();
 
-        _pointerBoundaryRadius = ComputePointerBoundary();
+        _pointerBoundaryRadius = (_backgroundRectTransform.rect.width - _pointerRectTransform.rect.width) / 2;
     }
-
 
     public void CursorDragStart()
     {
-        StopAllCoroutines();
         _cursorAnimator.SetTrigger("FadeIn");
+        StopAllCoroutines();
     }
 
     public void CursorDragEnd()
     {
-        StartCoroutine(MovePointerToOrigin());
         _cursorAnimator.SetTrigger("FadeOut");
+        StartCoroutine(MovePointerToOrigin());
     }
 
     public void SetBackgroundPosition(Vector2 position)
@@ -58,17 +57,14 @@ public class CursorDisplayer : MonoBehaviour
         _pointerPosition = _backgroundPosition + offset;
         _pointerRectTransform.anchoredPosition = _pointerPosition;
 
+        #if UNITY_EDITOR
         Debug.DrawLine(_backgroundPosition, _pointerPosition);
-    }
-
-    private float ComputePointerBoundary()
-    {
-        return _backgroundRectTransform.rect.width / 2 - _pointerRectTransform.rect.width / 2;
+        #endif
     }
 
     private IEnumerator MovePointerToOrigin()
     {
-        while (_backgroundPosition != _pointerPosition)
+        while (_pointerPosition != _backgroundPosition)
         {
             _pointerPosition = _pointerRectTransform.anchoredPosition;
 
