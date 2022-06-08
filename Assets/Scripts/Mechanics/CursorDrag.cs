@@ -30,8 +30,8 @@ public class CursorDrag : MonoBehaviour
             _isDragging = false;
             _endPoint = Input.mousePosition;
             _cursorDisplayer.CursorDragEnd();
-            Debug.Log("Vector:" + _cursorDisplayer.GetDragValue());
-            Debug.Log("Magnitude:" + _cursorDisplayer.GetDragValue().magnitude);
+            Debug.Log("Vector:" + _cursorDisplayer.GetDragValue);
+            Debug.Log("Magnitude:" + _cursorDisplayer.GetDragValue.magnitude);
         }
 
         if (_isDragging)

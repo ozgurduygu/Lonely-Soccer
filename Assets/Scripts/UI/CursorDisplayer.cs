@@ -3,10 +3,13 @@ using UnityEngine;
 
 public class CursorDisplayer : MonoBehaviour
 {
-    public GameObject cursorBackground;
-    public GameObject cursorPointer;
+    [SerializeField]
+    private GameObject cursorBackground;
+    [SerializeField]
+    private GameObject cursorPointer;
 
-    public float cursorReturnSpeed = 1000;
+    [SerializeField]
+    private float cursorReturnSpeed = 1000;
 
     private Animator _cursorAnimator;
 
@@ -17,6 +20,8 @@ public class CursorDisplayer : MonoBehaviour
     private Vector2 _pointerPosition;
     private float _pointerBoundaryRadius;
 
+    public Vector2 GetDragValue { get { return (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;} }
+    
     private void Awake()
     {
         _cursorAnimator = this.GetComponent<Animator>();
@@ -27,10 +32,6 @@ public class CursorDisplayer : MonoBehaviour
         _pointerBoundaryRadius = ComputePointerBoundary();
     }
 
-    public Vector2 GetDragValue()
-    {
-        return (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;
-    }
 
     public void CursorDragStart()
     {
