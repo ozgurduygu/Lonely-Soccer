@@ -20,7 +20,7 @@ public class CursorDisplayer : MonoBehaviour
     private Vector2 _pointerPosition;
     private float _pointerBoundaryRadius;
 
-    public Vector2 GetDragVector { get { return (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;} }
+    public Vector2 Value { get { return (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;} }
     
     private void Awake()
     {
@@ -52,7 +52,7 @@ public class CursorDisplayer : MonoBehaviour
 
     public void SetCursorPosition(Vector2 position)
     {
-        Vector2 offset = Vector2.ClampMagnitude(position - _backgroundPosition, _pointerBoundaryRadius);
+        var offset = Vector2.ClampMagnitude(position - _backgroundPosition, _pointerBoundaryRadius);
 
         _pointerPosition = _backgroundPosition + offset;
         _pointerRectTransform.anchoredPosition = _pointerPosition;
@@ -67,7 +67,7 @@ public class CursorDisplayer : MonoBehaviour
         while (_pointerPosition != _backgroundPosition)
         {
             _pointerPosition = _pointerRectTransform.anchoredPosition;
-
+            
             _pointerRectTransform.anchoredPosition = Vector2.MoveTowards(_pointerPosition, _backgroundPosition, cursorReturnSpeed * Time.deltaTime);
             yield return null;
         }

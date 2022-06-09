@@ -37,18 +37,20 @@ public class CursorDrag : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _isDragging = false;
-            
-            _ballPhysics.Move();
-            
             _cursorDisplayer.CursorDragEnd();
+            
+            if(_cursorDisplayer.Value.magnitude < minDragMagnitude)
+            {
+                
+            }
         }
 
         if (_isDragging)
         {
             _cursorDisplayer.SetCursorPosition(Input.mousePosition);
             
-            Vector2 dragVector = _cursorDisplayer.GetDragVector;
-            _ballPhysics.CalculateTrajectory(dragVector);
+            var initialVelocity = new Vector3(_cursorDisplayer.Value.x, 0, _cursorDisplayer.Value.y) * -40f;
+            _ballPhysics.CalculateTrajectory(initialVelocity);
         }
     }
 }
