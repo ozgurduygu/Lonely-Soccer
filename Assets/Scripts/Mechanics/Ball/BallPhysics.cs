@@ -8,47 +8,55 @@ public class BallPhysics : MonoBehaviour
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
 
-    [SerializeField] private LineRenderer trajectoryLine;
+    [SerializeField] private Trajectory trajectory;
+    [SerializeField] private int maxIteration = 12;
+    
+    private void Awake() {
+        
+    }
 
-    public Vector3[] CalculateTrajectory(Vector3 initialVelocity)
+    public Vector3[] CalculateTrajectory(Vector3 velocity)
     {
-        var velocity = initialVelocity;
-        var positions = new List<Vector3>();
+        var reflection = velocity;
         var collidersLayerMask = LayerMask.GetMask("Colliders");
 
-        RaycastHit hit;
+        trajectory.AddPoint(transform.position);
 
-        if(velocity.magnitude > 0)
+
+        Ray ray = new Ray(transform.position, reflection);
+
+        var i = 0;
+        var doCheckHit = true;
+        while (doCheckHit && i < maxIteration)
         {
-            positions.Add(transform.position);
-            
-            Ray ray = new Ray(transform.position, velocity);
-            //if(Physics.Raycast(transform.position, velocity, out hit, velocity.magnitude, collidersLayerMask))
-            if(Physics.SphereCast(ray, transform.localScale.x, out hit, velocity.magnitude, collidersLayerMask))
+            RaycastHit hit;
+
+            doCheckHit = Physics.SphereCast(ray, transform.localScale.x, out hit, reflection.magnitude, collidersLayerMask);
+
+            if (doCheckHit)
             {
-                Debug.Log(hit.normal);
+                var dummy = hit.collider.gameObject.GetComponent<Dummy>();
 
-                var reflection = Vector3.Reflect(velocity, hit.normal);
 
-                positions.Add(hit.point);
+                if (dummy)
+                    reflection = dummy.Shoot(reflection);
 
-                positions.Add(hit.point + reflection);
+                Debug.Log(reflection);
 
-                Debug.DrawLine(transform.position, hit.point, Color.red); // Draw origin to hit Vector
-                Debug.DrawLine(hit.point, hit.normal * reflection.magnitude, Color.blue); // Draw Normal Vector
-                Debug.DrawLine(hit.point, reflection, Color.magenta); // Draw Reflection Vector
+                ray = new Ray(hit.point, reflection);
+
+                trajectory.AddPoint(hit.point);
             }
-            else
-            {
-                var lastPosition = positions[positions.Count-1] + velocity;
-                Debug.DrawLine(transform.position, lastPosition, Color.red);
-                positions.Add(lastPosition);
-            }
-            
-            trajectoryLine.positionCount = positions.Count;
-            trajectoryLine.SetPositions(positions.ToArray());
-            positions.Clear();
+
+            i++;
         }
+
+        var lastPosition = trajectory.lastPoint + reflection;
+        trajectory.AddPoint(lastPosition);
+
+        trajectory.Draw();
+        trajectory.Clear();
+
         return new Vector3[]{};
     }
 
