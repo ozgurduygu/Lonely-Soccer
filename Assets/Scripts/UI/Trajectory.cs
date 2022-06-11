@@ -1,39 +1,34 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Trajectory : MonoBehaviour
 {
     [SerializeField] private LineRenderer _lineRenderer;
 
-    private Vector3[] points = new Vector3[0];
+    private List<Vector3> _points = new List<Vector3>();
 
-    public Vector3 lastPoint { get { return points[points.Length - 1]; } }
+    public Vector3 lastPoint { get { return _points.Last(); } }
 
     public void Draw()
-    {
-        _lineRenderer.positionCount = points.Length;
-        _lineRenderer.SetPositions(points);
+    {   
+        _lineRenderer.positionCount = _points.Count;
+        _lineRenderer.SetPositions(_points.ToArray());
     }
 
     public void Clear()
     {
-        _lineRenderer.positionCount = 0;
-        points = null;
-        _lineRenderer.SetPositions(points);
+        _points.Clear();
+        Draw();
     }
 
     public void AddPoint(Vector3 v)
     {
-        Debug.Log(points);
-        var newPoints = new Vector3[points.Length + 1];
+        _points.Add(v);
+    }
 
-        for (int i = 0; i < points.Length; i++)
-        {
-            newPoints[i] = points[i];
-        }
-
-        newPoints[newPoints.Length - 1] = v;
-        points = newPoints;
+    private void Update()
+    {
+        _lineRenderer.material.SetTextureOffset("_MainTex", Vector2.left * Time.time);
     }
 }

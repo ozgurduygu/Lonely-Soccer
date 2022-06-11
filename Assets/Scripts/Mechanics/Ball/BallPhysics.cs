@@ -8,15 +8,18 @@ public class BallPhysics : MonoBehaviour
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
 
-    [SerializeField] private Trajectory trajectory;
+    [SerializeField] private GameObject lineRenderer;
+    private Trajectory trajectory;
     [SerializeField] private int maxIteration = 12;
     
     private void Awake() {
-        
+        trajectory = lineRenderer.GetComponent<Trajectory>();    
     }
 
     public Vector3[] CalculateTrajectory(Vector3 velocity)
     {
+        trajectory.Clear();
+        
         var reflection = velocity;
         var collidersLayerMask = LayerMask.GetMask("Colliders");
 
@@ -39,9 +42,7 @@ public class BallPhysics : MonoBehaviour
 
 
                 if (dummy)
-                    reflection = dummy.Shoot(reflection);
-
-                Debug.Log(reflection);
+                    reflection = dummy.Bounce(reflection);
 
                 ray = new Ray(hit.point, reflection);
 
@@ -55,7 +56,6 @@ public class BallPhysics : MonoBehaviour
         trajectory.AddPoint(lastPosition);
 
         trajectory.Draw();
-        trajectory.Clear();
 
         return new Vector3[]{};
     }
