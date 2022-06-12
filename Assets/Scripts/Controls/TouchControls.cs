@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class TouchControls : MonoBehaviour
 {
+    [SerializeField] private float touchTolerance = 1f;
+
     private bool _isDragging;
 
     private CursorDrag cursorDrag;
-    private Dummy _dummy; 
+    private Dummy _dummy;
+
     private void Awake()
     {
         cursorDrag = GetComponentInChildren<CursorDrag>();
@@ -19,13 +22,11 @@ public class TouchControls : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            _isDragging = true;
-            OnTouchDown(position);
+            OnTouchBegin(position);
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            _isDragging = false;
-            OnTouchEnd(position);
+            OnTouchComplete(position);
         }
         else if (_isDragging)
         {
@@ -33,8 +34,10 @@ public class TouchControls : MonoBehaviour
         }
     }
 
-    private void OnTouchDown(Vector3 position)
+    private void OnTouchBegin(Vector3 position)
     {
+        _isDragging = true;
+
         _dummy = DummyTouchCheck(position);
         
         if(_dummy == null)
@@ -56,8 +59,9 @@ public class TouchControls : MonoBehaviour
         }
     }
 
-    private void OnTouchEnd(Vector3 position)
+    private void OnTouchComplete(Vector3 position)
     {
+        _isDragging = false;
 
         if(_dummy != null)
         {
@@ -74,7 +78,7 @@ public class TouchControls : MonoBehaviour
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(position);
         
-        Physics.Raycast(ray, out hit);
+        Physics.SphereCast(ray, touchTolerance, out hit);
 
         return hit.transform.GetComponent<Dummy>();
     }

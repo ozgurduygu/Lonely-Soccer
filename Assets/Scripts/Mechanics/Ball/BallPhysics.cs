@@ -4,22 +4,23 @@ using UnityEngine;
 
 public class BallPhysics : MonoBehaviour
 {
-    [SerializeField] private float speed;
+    [SerializeField] private float speed = 1;
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
 
     [SerializeField] private GameObject lineRenderer;
     private Trajectory trajectory;
     [SerializeField] private int maxIteration = 12;
-    
-    private void Awake() {
-        trajectory = lineRenderer.GetComponent<Trajectory>();    
+
+    private void Awake()
+    {
+        trajectory = lineRenderer.GetComponent<Trajectory>();
     }
 
     public Vector3[] CalculateTrajectory(Vector3 velocity)
     {
-        trajectory.Clear();
-        
+        trajectory.ClearPoints();
+
         var reflection = velocity;
         var collidersLayerMask = LayerMask.GetMask("Colliders");
 
@@ -57,11 +58,34 @@ public class BallPhysics : MonoBehaviour
 
         trajectory.Draw();
 
-        return new Vector3[]{};
+        return new Vector3[] { };
     }
 
-    public IEnumerator MoveThroughPointsCoroutine(Vector3[] points)
+    public void EndTrajectory()
     {
-        yield return null;
+    }
+
+    public void Shoot()
+    {
+        var points = trajectory.ProcessTrajectory().ToArray();
+        StartCoroutine(MoveBall(points));
+    }
+
+    private IEnumerator MoveBall(Vector3[] points)
+    {
+        Vector3 velocity = Vector3.zero;
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            var destination = points[i];
+            var delta = 0f;
+            while (Vector3.Distance(transform.position, destination) > 0.1f)
+            {
+                delta += Time.deltaTime * 0.1f;
+                transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, 0.1f, speed);
+                transform.position = Vector3.Lerp(transform.position, destination, delta);
+                yield return null;
+            }
+        }
     }
 }
