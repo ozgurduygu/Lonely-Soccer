@@ -40,13 +40,6 @@ public class BallPhysics : MonoBehaviour
 
             if (doCheckHit)
             {
-                if(hit.collider.CompareTag("GoalPost"))
-                {
-                    Debug.Log("scores");                
-                    trajectory.GetComponent<LineRenderer>().materials[0].SetVector("_EmissionColor", Color.green * 3);
-                }
-                else
-                    trajectory.GetComponent<LineRenderer>().materials[0].SetVector("_EmissionColor", Color.white * 3);
                 var dummy = hit.collider.gameObject.GetComponent<Dummy>();
 
                 if (dummy)
@@ -90,6 +83,7 @@ public class BallPhysics : MonoBehaviour
         {
             var origin = transform.position;
             var destination = points[i];
+            destination.y += 2f;
             var distanceX = destination.x - origin.x;
             var distanceY = destination.y - origin.y;
             var distanceZ = destination.z - origin.z;

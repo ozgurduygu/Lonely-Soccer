@@ -41,11 +41,6 @@ public class Trajectory : MonoBehaviour
         _points.Add(v);
     }
 
-    private void Update()
-    {
-        _lineRenderer.material.SetTextureOffset("_MainTex", Vector2.left * Time.time);
-    }
-
     public void FadeIn()
     {
         _animator.ResetTrigger("FadeOut");
