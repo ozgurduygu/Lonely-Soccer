@@ -4,11 +4,7 @@ using UnityEngine;
 
 public class BallPhysics : MonoBehaviour
 {
-    [SerializeField] private float maxSpeed = 50f;
-    [SerializeField] private float minSpeed = 5f;
-    [SerializeField] private float acceleration = 100f;
-    [SerializeField] private float deceleration = 20f;
-    [SerializeField] private float energyLoss = 5f;
+    [SerializeField] public float gravity = -100;
 
     [SerializeField] private GameObject lineRenderer;
     private Trajectory trajectory;
@@ -44,8 +40,14 @@ public class BallPhysics : MonoBehaviour
 
             if (doCheckHit)
             {
+                if(hit.collider.CompareTag("GoalPost"))
+                {
+                    Debug.Log("scores");                
+                    trajectory.GetComponent<LineRenderer>().materials[0].SetVector("_EmissionColor", Color.green * 3);
+                }
+                else
+                    trajectory.GetComponent<LineRenderer>().materials[0].SetVector("_EmissionColor", Color.white * 3);
                 var dummy = hit.collider.gameObject.GetComponent<Dummy>();
-
 
                 if (dummy)
                     reflection = dummy.Bounce(reflection);
@@ -74,73 +76,52 @@ public class BallPhysics : MonoBehaviour
     {
         // Attach camera to follow the ball
         Camera.main.GetComponent<CameraControls>().SetCamera(CameraControls.Camera.ball);
-        var points = trajectory.ProcessTrajectory().ToArray();
+        var points = trajectory.ProcessTrajectory();
         StartCoroutine(MoveBall(points));
     }
 
     private IEnumerator MoveBall(Vector3[] points)
     {
+        yield return new WaitForSeconds(0.2f);
+
         Vector3 velocity = Vector3.zero;
 
         for (int i = 0; i < points.Length; i++)
         {
+            var origin = transform.position;
             var destination = points[i];
+            var distanceX = destination.x - origin.x;
+            var distanceY = destination.y - origin.y;
+            var distanceZ = destination.z - origin.z;
 
-            var isFirstPoint = i == 0;
-            var isLastPoint = i == points.Length - 1;
+            var peakHeight = 8f;
+            var horizontalDistance = new Vector3(distanceX, 0, distanceZ);
 
-            var speed = maxSpeed;
+            var travelTime = Mathf.Sqrt(-2f * peakHeight / gravity) + Mathf.Sqrt(2f * (distanceY - peakHeight) / gravity);
+            var verticalVelocity = Vector3.up * Mathf.Sqrt(-2f * gravity * peakHeight);
+            var horizontalVelocity = horizontalDistance / travelTime;
 
-            var distance2D = Distance2D(transform.position, destination);
+            Physics.gravity = Vector3.up * gravity;
+                if(i == points.Length - 1)
+                    GetComponent<Rigidbody>().drag = 1f;
 
-            while (Vector3.Distance(transform.position, destination) >= maxSpeed * Time.deltaTime)
+            GetComponent<Rigidbody>().velocity = verticalVelocity + horizontalVelocity;
+
+
+            while (travelTime > 0f)
             {
-                var interpolation = Vector2.zero;
-                var progress = (distance2D - Vector3.Distance(transform.position, destination)) / distance;
-                if (isFirstPoint)
-                {
-                    // interpolate horizontal position
-                    interpolation.x = 0f;
-                    // interpolate vertical position
-                    interpolation.y = 0f;
-                }
-                else if (isLastPoint)
-                {
-                    // interpolate horizontal position
-                    interpolation.x = 0f;
-                    // interpolate vertical position
-                    interpolation.y = 0f;
-                    speed = maxSpeed - maxSpeed * progress;
-                    Debug.Log(progress);
-                }
-                else
-                {
-                    // interpolate horizontal position
-                    interpolation.x = 0f;
-                    // interpolate vertical position
-                    interpolation.y = 0f;
-                }
-
-                var newPosition = Vector3.MoveTowards(transform.position, destination, speed);
-
-                transform.position = newPosition;
-
+                travelTime -= Time.deltaTime;
                 yield return null;
             }
         }
 
         // Shoot finished, return camera and ball!
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(1);
 
         Camera.main.GetComponent<CameraControls>().SetCamera(CameraControls.Camera.top);
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        GetComponent<Rigidbody>().drag = 0f;
         transform.position = _spawnPosition;
-    }
-
-    private float Distance2D(Vector3 origin, Vector3 destination)
-    {
-        var origin2D = new Vector2(origin.x, origin.z);
-        var destination2D = new Vector2(destination.x, destination.z);
-
-        return Vector2.Distance(origin2D, destination2D);
     }
 }

@@ -58,14 +58,11 @@ public class Trajectory : MonoBehaviour
         _animator.SetTrigger("FadeOut");
     }
 
-    public List<Vector3> ProcessTrajectory()
+    public Vector3[] ProcessTrajectory()
     {
-        foreach (var point in _points)
-        {
-            // Do nothing for now
-        }
-
         _points.RemoveAt(0);
-        return _points;
+        var points = _points.ToArray();
+
+        return points;
     }
 }
