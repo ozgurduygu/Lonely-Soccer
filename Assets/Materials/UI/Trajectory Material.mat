@@ -80,7 +80,7 @@ Material:
     m_Ints: []
     m_Floats:
     - PixelSnap: 0
-    - _Alpha_Clip_Threshold: 0.01
+    - _Alpha_Clip_Threshold: 0.1
     - _BUILTIN_AlphaClip: 1
     - _BUILTIN_Blend: 0
     - _BUILTIN_CullMode: 2
@@ -101,8 +101,8 @@ Material:
     - _GlossMapScale: 0.707
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Gradient_Spread: 150
-    - _Gradient_Start: -80
+    - _Gradient_Spread: 100
+    - _Gradient_Start: 100
     - _Metallic: 0
     - _Mode: 2
     - _OcclusionStrength: 1

@@ -61,6 +61,15 @@ public class BallPhysics : MonoBehaviour
         return new Vector3[] { };
     }
 
+    private void OnTriggerEnter(Collider collider)
+    {
+        if(collider.CompareTag("GoalPost"))
+        {
+            GetComponentInChildren<ParticleSystem>().Play();
+            Debug.Log("Score!");
+        }
+    }
+
     public void EndTrajectory()
     {
     }
