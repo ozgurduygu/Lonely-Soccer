@@ -2,51 +2,43 @@ using System.Collections;
 using UnityEngine;
 
 public class CursorDisplayer : MonoBehaviour
-{
-    [SerializeField]
-    private GameObject cursorBackground;
-    [SerializeField]
-    private GameObject cursorPointer;
+{   
+    [SerializeField] private float cursorReturnSpeed = 500;
 
-    [SerializeField]
-    private float cursorReturnSpeed = 500;
+    [SerializeField] private Animator cursorAnimator;
 
-    private Animator _cursorAnimator;
-
-    private RectTransform _backgroundRectTransform;
-    private RectTransform _pointerRectTransform;
+    [SerializeField] private RectTransform backgroundRectTransform;
+    [SerializeField] private RectTransform pointerRectTransform;
 
     private Vector2 _backgroundPosition;
     private Vector2 _pointerPosition;
     private float _pointerBoundaryRadius;
 
-    public Vector2 Value { get { return (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;} }
+    public Vector2 Value
+    { 
+        get => (_pointerPosition - _backgroundPosition) / _pointerBoundaryRadius;
+    }
     
-    private void Awake()
+    private void Start()
     {
-        _cursorAnimator = GetComponent<Animator>();
-
-        _backgroundRectTransform = cursorBackground.GetComponent<RectTransform>();
-        _pointerRectTransform = cursorPointer.GetComponent<RectTransform>();
-
-        _pointerBoundaryRadius = (_backgroundRectTransform.rect.width - _pointerRectTransform.rect.width) / 2;
+        _pointerBoundaryRadius = (backgroundRectTransform.rect.width - pointerRectTransform.rect.width) / 2;
     }
 
     public void CursorDragStart()
     {
-        _cursorAnimator.SetTrigger("FadeIn");
+        cursorAnimator.SetTrigger("FadeIn");
         StopAllCoroutines();
     }
 
     public void CursorDragEnd()
     {
-        _cursorAnimator.SetTrigger("FadeOut");
+        cursorAnimator.SetTrigger("FadeOut");
         StartCoroutine(MovePointerToOriginCoroutine());
     }
 
     public void SetBackgroundPosition(Vector2 position)
     {
-        _backgroundRectTransform.anchoredPosition = position;
+        backgroundRectTransform.anchoredPosition = position;
         _backgroundPosition = position;
     }
 
@@ -55,7 +47,7 @@ public class CursorDisplayer : MonoBehaviour
         var offset = Vector2.ClampMagnitude(position - _backgroundPosition, _pointerBoundaryRadius);
 
         _pointerPosition = _backgroundPosition + offset;
-        _pointerRectTransform.anchoredPosition = _pointerPosition;
+        pointerRectTransform.anchoredPosition = _pointerPosition;
 
         #if UNITY_EDITOR
         Debug.DrawLine(_backgroundPosition, _pointerPosition);
@@ -66,9 +58,9 @@ public class CursorDisplayer : MonoBehaviour
     {
         while (_pointerPosition != _backgroundPosition)
         {
-            _pointerPosition = _pointerRectTransform.anchoredPosition;
+            _pointerPosition = pointerRectTransform.anchoredPosition;
             
-            _pointerRectTransform.anchoredPosition = Vector2.MoveTowards(_pointerPosition, _backgroundPosition, cursorReturnSpeed * Time.deltaTime);
+            pointerRectTransform.anchoredPosition = Vector2.MoveTowards(_pointerPosition, _backgroundPosition, cursorReturnSpeed * Time.deltaTime);
             yield return null;
         }
     }

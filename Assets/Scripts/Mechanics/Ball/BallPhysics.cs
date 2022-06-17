@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BallPhysics : MonoBehaviour
@@ -7,16 +6,10 @@ public class BallPhysics : MonoBehaviour
     [SerializeField] public float gravity = -100;
 
     [SerializeField] private GameObject lineRenderer;
-    private Trajectory trajectory;
-    [SerializeField] private int maxIteration = 12;
-
-    private Vector3 _spawnPosition;
-
-    private void Awake()
-    {
-        _spawnPosition = transform.position;
-        trajectory = lineRenderer.GetComponent<Trajectory>();
-    }
+    
+    [SerializeField] private Trajectory trajectory;
+    
+    [SerializeField] private int maxTrajectoryBounce = 12;
 
     public Vector3[] CalculateTrajectory(Vector3 velocity)
     {
@@ -32,7 +25,7 @@ public class BallPhysics : MonoBehaviour
 
         var i = 0;
         var doCheckHit = true;
-        while (doCheckHit && i < maxIteration)
+        while (doCheckHit && i < maxTrajectoryBounce)
         {
             RaycastHit hit;
 
@@ -66,7 +59,6 @@ public class BallPhysics : MonoBehaviour
         if(collider.CompareTag("GoalPost"))
         {
             GetComponentInChildren<ParticleSystem>().Play();
-            Debug.Log("Score!");
         }
     }
 
@@ -77,6 +69,8 @@ public class BallPhysics : MonoBehaviour
     public void Shoot()
     {
         // Attach camera to follow the ball
+        TouchController.active = false;
+
         Camera.main.GetComponent<CameraControls>().SetCamera(CameraControls.Camera.ball);
         var points = trajectory.ProcessTrajectory();
         StartCoroutine(MoveBall(points));
@@ -84,6 +78,8 @@ public class BallPhysics : MonoBehaviour
 
     private IEnumerator MoveBall(Vector3[] points)
     {
+        var cachedPosition = transform.position;
+
         yield return new WaitForSeconds(0.2f);
 
         Vector3 velocity = Vector3.zero;
@@ -125,6 +121,10 @@ public class BallPhysics : MonoBehaviour
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         GetComponent<Rigidbody>().drag = 0f;
-        transform.position = _spawnPosition;
+
+        transform.position = cachedPosition;
+        transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        TouchController.active = true;
     }
 }

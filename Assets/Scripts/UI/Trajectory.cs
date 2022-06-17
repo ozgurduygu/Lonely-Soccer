@@ -4,25 +4,18 @@ using UnityEngine;
 
 public class Trajectory : MonoBehaviour
 {
-    [SerializeField] private LineRenderer _lineRenderer;
+    [SerializeField] private LineRenderer lineRenderer;
 
     private List<Vector3> _points = new List<Vector3>();
 
     [HideInInspector] public Vector3 lastPoint { get { return _points.Last(); } }
 
-    private Animator _animator;
-
-    private bool _isActive;
-
-    private void Awake()
-    {
-        _animator = GetComponent<Animator>();
-    }
+    public Animator _animator;
 
     public void Draw()
     {
-        _lineRenderer.positionCount = _points.Count;
-        _lineRenderer.SetPositions(_points.ToArray());
+        lineRenderer.positionCount = _points.Count;
+        lineRenderer.SetPositions(_points.ToArray());
     }
 
     public void ClearPoints()

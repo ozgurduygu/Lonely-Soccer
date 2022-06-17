@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AutoDummy : Dummy
@@ -16,7 +14,7 @@ public class AutoDummy : Dummy
         return direction * entryVector.magnitude;
     }
 
-    public override void Interact()
+    public override void Interact(Vector3 position)
     {
         return;
     }

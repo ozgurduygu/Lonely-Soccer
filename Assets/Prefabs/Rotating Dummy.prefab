@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 972270864167171042}
   - component: {fileID: 972270864167171041}
   - component: {fileID: 972270864167171046}
+  - component: {fileID: 7416910503516526840}
   m_Layer: 6
   m_Name: Rotating Dummy
   m_TagString: Untagged
@@ -27,7 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 972270864167171052}
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 4, z: 0}
   m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
@@ -111,6 +112,64 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   directions:
-  - 0
-  - 45
-  - 90
+  - -90
+  - -60
+  - -30
+--- !u!114 &7416910503516526840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972270864167171052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 404446e6a2312864a8672ec3c8bd73c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isTouched: 0
+  beginMethod:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 972270864167171046}
+        m_TargetAssemblyTypeName: RotatingDummy, Assembly-CSharp
+        m_MethodName: OnTouchBegin
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  dragMethod:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 972270864167171046}
+        m_TargetAssemblyTypeName: RotatingDummy, Assembly-CSharp
+        m_MethodName: OnTouchDrag
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  completeMethod:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 972270864167171046}
+        m_TargetAssemblyTypeName: RotatingDummy, Assembly-CSharp
+        m_MethodName: OnTouchComplete
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
