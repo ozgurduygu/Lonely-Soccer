@@ -440,7 +440,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 948958086113953270}
         m_TargetAssemblyTypeName: CursorController, Assembly-CSharp
-        m_MethodName: DragStart
+        m_MethodName: OnTouchBegin
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -455,7 +455,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 948958086113953270}
         m_TargetAssemblyTypeName: CursorController, Assembly-CSharp
-        m_MethodName: DragUpdate
+        m_MethodName: OnTouchDrag
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -470,7 +470,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 948958086113953270}
         m_TargetAssemblyTypeName: CursorController, Assembly-CSharp
-        m_MethodName: DragEnd
+        m_MethodName: OnTouchComplete
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

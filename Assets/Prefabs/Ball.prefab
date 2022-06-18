@@ -41,11 +41,11 @@ TrailRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 89691590205358700}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 0
   m_StaticShadowCaster: 0
-  m_MotionVectors: 0
+  m_MotionVectors: 2
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 89691590345504223}
   - component: {fileID: 89691590345504222}
   - component: {fileID: 89691590345504217}
+  - component: {fileID: 4867932843966156190}
   - component: {fileID: 89691590345504220}
   - component: {fileID: 89691590345504221}
   - component: {fileID: 89691590345504194}
@@ -229,6 +230,23 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4867932843966156190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89691590345504218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4cf50f824c472d44b4b608035359d13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ballPhysics: {fileID: 89691590345504220}
+  _cameraController: {fileID: 0}
+  _scoreParticles: {fileID: 89691591498681045}
+  _trailRenderer: {fileID: 89691590205358610}
+  trajectory: {fileID: 89691591145200236}
 --- !u!114 &89691590345504220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,10 +259,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad6d5fb1e22dc654b96d5e7c62d22859, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ball: {fileID: 0}
   gravity: -100
-  lineRenderer: {fileID: 89691591145200233}
-  trajectory: {fileID: 89691591145200236}
-  maxIteration: 12
+  _rigidbody: {fileID: 89691590345504221}
+  maxTrajectoryBounce: 12
 --- !u!54 &89691590345504221
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -420,7 +438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e63959f4ebdc34b8e851afb1f5c47136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lineRenderer: {fileID: 89691591145200238}
+  lineRenderer: {fileID: 0}
   _animator: {fileID: 89691591145200237}
 --- !u!95 &89691591145200237
 Animator:

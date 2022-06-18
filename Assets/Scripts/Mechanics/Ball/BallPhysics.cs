@@ -1,130 +1,145 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BallPhysics : MonoBehaviour
 {
-    [SerializeField] public float gravity = -100;
+    [SerializeField] private Ball _ball;
 
-    [SerializeField] private GameObject lineRenderer;
-    
-    [SerializeField] private Trajectory trajectory;
-    
+    [SerializeField] private float gravity = -100;
+
+    [SerializeField] private Rigidbody _rigidbody;
+
     [SerializeField] private int maxTrajectoryBounce = 12;
 
-    public Vector3[] CalculateTrajectory(Vector3 velocity)
+    private LayerMask _dummiesLayerMask;
+
+    private void Awake()
     {
-        trajectory.ClearPoints();
+        _dummiesLayerMask = LayerMask.GetMask("Dummies");
+    }
 
-        var reflection = velocity;
-        var collidersLayerMask = LayerMask.GetMask("Colliders");
+    private void OnValidate()
+    {
+        UpdateGravity(gravity);
+    }
 
-        trajectory.AddPoint(transform.position);
+    public List<Vector3> CalculateTrajectory(Vector3 motion)
+    {
+        var trajectoryPoints = new List<Vector3>();
 
+        var trajectoryStartingPosition = transform.position;
+        trajectoryPoints.Add(trajectoryStartingPosition);
 
-        Ray ray = new Ray(transform.position, reflection);
+        var bounceOffPoints = CalculateBounceOffPoints(ref motion);
+        trajectoryPoints.AddRange(bounceOffPoints);
 
-        var i = 0;
-        var doCheckHit = true;
-        while (doCheckHit && i < maxTrajectoryBounce)
+        var ballStopPosition = trajectoryPoints.Last() + motion;
+        trajectoryPoints.Add(ballStopPosition);
+
+        return trajectoryPoints;
+    }
+
+    private List<Vector3> CalculateBounceOffPoints(ref Vector3 reflection)
+    {
+        var bounceOffPoints = new List<Vector3>();
+
+        var limit = maxTrajectoryBounce;
+        var shouldCheckBounce = limit > 0;
+
+        RaycastHit hit;
+        var ray = new Ray(transform.position, reflection);
+
+        while (shouldCheckBounce)
         {
-            RaycastHit hit;
+            var hits = Physics.SphereCast(ray, transform.localScale.x, out hit, reflection.magnitude, _dummiesLayerMask);
 
-            doCheckHit = Physics.SphereCast(ray, transform.localScale.x, out hit, reflection.magnitude, collidersLayerMask);
-
-            if (doCheckHit)
+            if (hits)
             {
-                var dummy = hit.collider.gameObject.GetComponent<Dummy>();
+                bounceOffPoints.Add(hit.point);
 
-                if (dummy)
-                    reflection = dummy.Bounce(reflection);
-
-                ray = new Ray(hit.point, reflection);
-
-                trajectory.AddPoint(hit.point);
+                reflection = BounceOffDummy(hit, reflection);
+                ray.origin = hit.point;
+                ray.direction = reflection;
             }
 
-            i++;
+            limit--;
+            shouldCheckBounce = hits && limit > 0;
         }
 
-        var lastPosition = trajectory.lastPoint + reflection;
-        trajectory.AddPoint(lastPosition);
+        return bounceOffPoints;
+    }
 
-        trajectory.Draw();
+    private Vector3 BounceOffDummy(RaycastHit hit, Vector3 reflection)
+    {
+        var dummy = hit.collider.gameObject.GetComponent<Dummy>();
 
-        return new Vector3[] { };
+        if (dummy != null)
+        {
+            return dummy.Bounce(reflection);
+        }
+        else
+        {
+            return reflection;
+        }
     }
 
     private void OnTriggerEnter(Collider collider)
     {
-        if(collider.CompareTag("GoalPost"))
+        CheckGoalPostHit(collider);
+    }
+
+    private void CheckGoalPostHit(Collider collider)
+    {
+        if (collider.CompareTag("GoalPost"))
         {
-            GetComponentInChildren<ParticleSystem>().Play();
+            _ball.Score();
         }
     }
 
-    public void EndTrajectory()
+    public IEnumerator MoveBallCoroutine(Vector3[] points)
     {
-    }
-
-    public void Shoot()
-    {
-        // Attach camera to follow the ball
-        TouchController.active = false;
-
-        Camera.main.GetComponent<CameraControls>().SetCamera(CameraControls.Camera.ball);
-        var points = trajectory.ProcessTrajectory();
-        StartCoroutine(MoveBall(points));
-    }
-
-    private IEnumerator MoveBall(Vector3[] points)
-    {
-        var cachedPosition = transform.position;
-
-        yield return new WaitForSeconds(0.2f);
-
-        Vector3 velocity = Vector3.zero;
-
         for (int i = 0; i < points.Length; i++)
         {
-            var origin = transform.position;
-            var destination = points[i];
-            destination.y += 2f;
-            var distanceX = destination.x - origin.x;
-            var distanceY = destination.y - origin.y;
-            var distanceZ = destination.z - origin.z;
+            if (i == points.Length - 1)
+                _rigidbody.drag = 1f;
 
-            var peakHeight = 8f;
-            var horizontalDistance = new Vector3(distanceX, 0, distanceZ);
-
-            var travelTime = Mathf.Sqrt(-2f * peakHeight / gravity) + Mathf.Sqrt(2f * (distanceY - peakHeight) / gravity);
-            var verticalVelocity = Vector3.up * Mathf.Sqrt(-2f * gravity * peakHeight);
-            var horizontalVelocity = horizontalDistance / travelTime;
-
-            Physics.gravity = Vector3.up * gravity;
-                if(i == points.Length - 1)
-                    GetComponent<Rigidbody>().drag = 1f;
-
-            GetComponent<Rigidbody>().velocity = verticalVelocity + horizontalVelocity;
-
-
-            while (travelTime > 0f)
-            {
-                travelTime -= Time.deltaTime;
-                yield return null;
-            }
+            yield return StartCoroutine(MoveBallToPoint(points[i]));
         }
+    }
 
-        // Shoot finished, return camera and ball!
-        yield return new WaitForSeconds(1);
+    private IEnumerator MoveBallToPoint(Vector3 destination)
+    {
+        var origin = transform.position;
+        var distanceX = destination.x - origin.x;
+        var distanceY = destination.y - origin.y;
+        var distanceZ = destination.z - origin.z;
 
-        Camera.main.GetComponent<CameraControls>().SetCamera(CameraControls.Camera.top);
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        GetComponent<Rigidbody>().drag = 0f;
+        var minPeakHeight = 1f;
+        var maxPeakHeight = 8f;
+        var horizontalDistance = new Vector3(distanceX, 0, distanceZ);
+        var peakHeight = Mathf.Lerp(minPeakHeight, maxPeakHeight, horizontalDistance.magnitude / 100);
 
-        transform.position = cachedPosition;
-        transform.rotation = Quaternion.Euler(0, 0, 0);
+        var travelTime = Mathf.Sqrt(-2f * peakHeight / gravity) + Mathf.Sqrt(2f * (distanceY - peakHeight) / gravity);
+        var verticalVelocity = Vector3.up * Mathf.Sqrt(-2f * gravity * peakHeight);
+        var horizontalVelocity = horizontalDistance / travelTime;
 
-        TouchController.active = true;
+        _rigidbody.velocity = verticalVelocity + horizontalVelocity;
+
+        var waitForBallToMove = new WaitForSeconds(travelTime);
+        yield return waitForBallToMove;
+    }
+
+    public void UpdateGravity(float gravity)
+    {
+        Physics.gravity = Vector3.up * gravity;
+    }
+
+    public void ResetPhysics()
+    {
+        _rigidbody.velocity = Vector3.zero;
+        _rigidbody.angularVelocity = Vector3.zero;
+        _rigidbody.drag = 0f;
     }
 }

@@ -11,11 +11,9 @@ public class AutoDummy : Dummy
         
         var direction = (target.transform.position - transform.position).normalized;
         direction.y = 0;
+        
         return direction * entryVector.magnitude;
     }
 
-    public override void Interact(Vector3 position)
-    {
-        return;
-    }
+    public override void Interact(Vector3 position) { }
 }

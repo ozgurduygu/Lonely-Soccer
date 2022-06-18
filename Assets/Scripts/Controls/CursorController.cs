@@ -4,71 +4,55 @@ public class CursorController : MonoBehaviour
 {
     [SerializeField] private float minDragMagnitude = .15f;
 
-    [SerializeField] private BallPhysics ballPhysics;
     [SerializeField] private CursorDisplayer cursorDisplayer;
 
-    private bool _trajectoryActive;
+    [SerializeField] private Ball ball;    
 
     private bool _isActive;
 
-    public void DragStart(Vector3 position, bool isTouched)
+    public void OnTouchBegin(Vector3 position, bool isTouched)
     {
-        if (TouchController.activeTouchable == null)
-        {
-            _isActive = true;
-        }
+        if (TouchController.activeTouchable != null) return;
 
-        if (_isActive)
+        _isActive = true;
+
+        cursorDisplayer.SetBackgroundPosition(position);
+        cursorDisplayer.CursorDragStart();
+    }
+
+    public void OnTouchDrag(Vector3 position, bool isTouched)
+    {
+        if (!_isActive) return;
+
+        cursorDisplayer.SetCursorPosition(position);
+
+        if (cursorDisplayer.Value.magnitude >= minDragMagnitude)
         {
-            cursorDisplayer.SetBackgroundPosition(position);
-            cursorDisplayer.CursorDragStart();
+            ball.trajectory.FadeIn();
+
+            var strength = new Vector3(cursorDisplayer.Value.x, 0, cursorDisplayer.Value.y) * -40f;
+
+            ball.Aim(strength);
+        }
+        else
+        {
+            ball.trajectory.FadeOut();
         }
     }
 
-    public void DragUpdate(Vector3 position, bool isTouched)
+    public void OnTouchComplete(Vector3 position, bool isTouched)
     {
-        if (_isActive)
+        if (!_isActive) return;
+
+        if (cursorDisplayer.Value.magnitude >= minDragMagnitude)
         {
-            cursorDisplayer.SetCursorPosition(position);
-
-            if (cursorDisplayer.Value.magnitude >= minDragMagnitude)
-            {
-                if (!_trajectoryActive)
-                {
-                    GameObject.Find("Ball Trajectory").GetComponent<Trajectory>().FadeIn();
-                    _trajectoryActive = true;
-                }
-                var initialVelocity = new Vector3(cursorDisplayer.Value.x, 0, cursorDisplayer.Value.y) * -40f;
-                ballPhysics.CalculateTrajectory(initialVelocity);
-            }
-            else
-            {
-                if (_trajectoryActive)
-                {
-                    GameObject.Find("Ball Trajectory").GetComponent<Trajectory>().FadeOut();
-                    _trajectoryActive = false;
-                }
-                ballPhysics.EndTrajectory();
-            }
+            ball.Shoot();
         }
-    }
 
-    public void DragEnd(Vector3 position, bool isTouched)
-    {
-        if (_isActive)
-        {
-            _isActive = false;
-            cursorDisplayer.CursorDragEnd();
-            if (cursorDisplayer.Value.magnitude >= minDragMagnitude)
-            {
-                ballPhysics.Shoot();
-            }
+        ball.trajectory.FadeOut();
 
-            if (_trajectoryActive)
-            {
-                GameObject.Find("Ball Trajectory").GetComponent<Trajectory>().FadeOut();
-                _trajectoryActive = false;
-            }
-        }
+        _isActive = false;
+
+        cursorDisplayer.CursorDragEnd();
     }
 }

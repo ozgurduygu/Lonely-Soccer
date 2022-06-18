@@ -8,7 +8,7 @@ public class Trajectory : MonoBehaviour
 
     private List<Vector3> _points = new List<Vector3>();
 
-    [HideInInspector] public Vector3 lastPoint { get { return _points.Last(); } }
+    public List<Vector3> Points { get => _points; set => _points = value; }
 
     public Animator _animator;
 
@@ -27,11 +27,6 @@ public class Trajectory : MonoBehaviour
     {
         ClearPoints();
         Draw();
-    }
-
-    public void AddPoint(Vector3 v)
-    {
-        _points.Add(v);
     }
 
     public void FadeIn()

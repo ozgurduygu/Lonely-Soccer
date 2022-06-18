@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2319848945110665666}
   m_LocalRotation: {x: -0.1396787, y: 0.30722177, z: -0.045640536, w: 0.94022423}
-  m_LocalPosition: {x: -0.00000013783574, y: 1.4439735, z: 24.72297}
+  m_LocalPosition: {x: -0.00014348305, y: 1.4451313, z: 24.73395}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -78,8 +78,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2319848945999323402}
-  m_LocalRotation: {x: 0.4736272, y: -0.00044932507, z: 0.00024163332, w: 0.8807253}
-  m_LocalPosition: {x: 0.10604675, y: 21.556786, z: -84.93577}
+  m_LocalRotation: {x: 0.002920174, y: -0.7132443, z: -0.7009032, w: -0.0029715905}
+  m_LocalPosition: {x: 0.05427007, y: 26.441454, z: -78.72216}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Priority: 0
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 2319848945110665725}
-  m_Follow: {fileID: 0}
+  m_Follow: {fileID: 2319848945110665725}
   m_Lens:
     FieldOfView: 22.619865
     OrthographicSize: 5
@@ -302,8 +302,8 @@ MonoBehaviour:
   m_UpdateMethod: 2
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
-    m_Style: 3
-    m_Time: 0.2
+    m_Style: 1
+    m_Time: 0.5
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -331,6 +331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topCamera: {fileID: 2319848946098958769}
   ballCamera: {fileID: 2319848945999323397}
+  cinemachineBrain: {fileID: 2319848946393096104}
 --- !u!1 &2319848946552553704
 GameObject:
   m_ObjectHideFlags: 0

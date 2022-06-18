@@ -48,10 +48,6 @@ public class CursorDisplayer : MonoBehaviour
 
         _pointerPosition = _backgroundPosition + offset;
         pointerRectTransform.anchoredPosition = _pointerPosition;
-
-        #if UNITY_EDITOR
-        Debug.DrawLine(_backgroundPosition, _pointerPosition);
-        #endif
     }
 
     private IEnumerator MovePointerToOriginCoroutine()
@@ -61,6 +57,7 @@ public class CursorDisplayer : MonoBehaviour
             _pointerPosition = pointerRectTransform.anchoredPosition;
             
             pointerRectTransform.anchoredPosition = Vector2.MoveTowards(_pointerPosition, _backgroundPosition, cursorReturnSpeed * Time.deltaTime);
+            
             yield return null;
         }
     }
