@@ -13,7 +13,7 @@ public class SlidingDummy : RotatingDummy
 
     private LineRenderer _lineRenderer;
 
-    private bool _doInteract;
+    private bool _shouldSlide;
 
     public override void Interact(Vector3 position)
     {
@@ -23,12 +23,12 @@ public class SlidingDummy : RotatingDummy
 
     public new void OnTouchBegin(Vector3 position, bool isTouched)
     {
-        _doInteract = isTouched;
+        _shouldSlide = isTouched;
     }
 
     public new void OnTouchDrag(Vector3 position, bool isTouched)
     {
-        if (_doInteract)
+        if (_shouldSlide)
         {
             Interact(position);
         }
@@ -36,7 +36,7 @@ public class SlidingDummy : RotatingDummy
 
     public new void OnTouchComplete(Vector3 position, bool isTouched)
     {
-        _doInteract = false;
+        _shouldSlide = false;
     }
 
     private void OnValidate()

@@ -1,4 +1,5 @@
 using Cinemachine;
+using System.Collections;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -12,20 +13,31 @@ public class CameraController : MonoBehaviour
         ball
     }
 
-    public float CameraBlendDuration 
+    public float CameraBlendDuration
     {
         get => cinemachineBrain.m_DefaultBlend.BlendTime;
     }
 
-public void SetCamera(Camera camera)
-{
-    if (camera == Camera.ball)
+    public WaitForSeconds WaitForCamera
     {
-        ballCamera.Priority = topCamera.Priority + 1;
+        get => new WaitForSeconds(CameraBlendDuration);
     }
-    else
+
+    public void SetCamera(Camera camera)
     {
-        ballCamera.Priority = topCamera.Priority - 1;
+        if (camera == Camera.ball)
+        {
+            ballCamera.Priority = topCamera.Priority + 1;
+        }
+        else
+        {
+            ballCamera.Priority = topCamera.Priority - 1;
+        }
     }
-}
+
+    public IEnumerator CameraToTargetCoroutine(CameraController.Camera target, WaitForSeconds waitForSeconds = null)
+    {
+        SetCamera(target);
+        yield return waitForSeconds;
+    }
 }

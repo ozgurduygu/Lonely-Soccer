@@ -8,7 +8,7 @@ public class RotatingDummy : Dummy
 
     private Vector3 _localNormal = Vector3.forward;
 
-    private bool _doInteract;
+    private bool _shouldRotate;
     private bool _hasTouched;
 
     public override Vector3 Bounce(Vector3 entryVector)
@@ -34,18 +34,18 @@ public class RotatingDummy : Dummy
 
     public void OnTouchDrag(Vector3 position, bool isTouched)
     {
-        _doInteract = _hasTouched && isTouched;
+        _shouldRotate = _hasTouched && isTouched;
     }
 
     public void OnTouchComplete(Vector3 position, bool isTouched)
     {
-        if (_doInteract)
+        if (_shouldRotate)
         {
             Interact(position);
         }
 
         _hasTouched = false;
-        _doInteract = false;
+        _shouldRotate = false;
     }
 
     private void OnValidate()

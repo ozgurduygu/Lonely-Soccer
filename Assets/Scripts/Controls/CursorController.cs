@@ -30,7 +30,7 @@ public class CursorController : MonoBehaviour
         {
             ball.trajectory.FadeIn();
 
-            var strength = new Vector3(cursorDisplayer.Value.x, 0, cursorDisplayer.Value.y) * -40f;
+            var strength = new Vector3(cursorDisplayer.Value.x, 0, cursorDisplayer.Value.y) * -1f;
 
             ball.Aim(strength);
         }

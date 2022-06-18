@@ -169,7 +169,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 89691590345504218}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.10000038, y: 1.5, z: -79.01}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
@@ -242,10 +242,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4cf50f824c472d44b4b608035359d13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelManager: {fileID: 0}
   ballPhysics: {fileID: 89691590345504220}
-  _cameraController: {fileID: 0}
-  _scoreParticles: {fileID: 89691591498681045}
-  _trailRenderer: {fileID: 89691590205358610}
+  cameraController: {fileID: 0}
+  scoreParticles: {fileID: 89691591498681045}
+  trailRenderer: {fileID: 89691590205358610}
   trajectory: {fileID: 89691591145200236}
 --- !u!114 &89691590345504220
 MonoBehaviour:
@@ -259,10 +260,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad6d5fb1e22dc654b96d5e7c62d22859, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ball: {fileID: 0}
-  gravity: -100
-  _rigidbody: {fileID: 89691590345504221}
+  ball: {fileID: 4867932843966156190}
+  ballRigidbody: {fileID: 89691590345504221}
   maxTrajectoryBounce: 12
+  shootStrength: 40
+  gravity: -100
+  hitTargetAtY: 2
+  minPeakHeight: 0.1
+  maxPeakHeight: 4
 --- !u!54 &89691590345504221
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -438,7 +443,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e63959f4ebdc34b8e851afb1f5c47136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRenderer: {fileID: 0}
+  lineRenderer: {fileID: 89691591145200238}
   _animator: {fileID: 89691591145200237}
 --- !u!95 &89691591145200237
 Animator:

@@ -5,13 +5,30 @@ using UnityEngine;
 
 public class BallPhysics : MonoBehaviour
 {
-    [SerializeField] private Ball _ball;
-
-    [SerializeField] private float gravity = -100;
-
-    [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private Ball ball;
+    [SerializeField] private Rigidbody ballRigidbody;
 
     [SerializeField] private int maxTrajectoryBounce = 12;
+
+    [SerializeField] public float shootStrength = 40f;
+
+    [SerializeField] public float gravity = -100f;
+
+    private float Gravity
+    {
+        get => Physics.gravity.y;
+
+        set
+        {
+            gravity = value;
+            Physics.gravity = Vector3.up * gravity;
+        }
+    }
+
+    [SerializeField] float hitTargetAtY = 2f;
+    [SerializeField] float minPeakHeight = 0.1f;
+    [SerializeField] float maxPeakHeight = 8f;
+
 
     private LayerMask _dummiesLayerMask;
 
@@ -22,19 +39,22 @@ public class BallPhysics : MonoBehaviour
 
     private void OnValidate()
     {
-        UpdateGravity(gravity);
+        Gravity = gravity;
     }
 
-    public List<Vector3> CalculateTrajectory(Vector3 motion)
+    public List<Vector3> CalculateTrajectory(Vector3 aiming)
     {
+        // Start trajectory from the standing position.
         var trajectoryPoints = new List<Vector3>();
-
         var trajectoryStartingPosition = transform.position;
         trajectoryPoints.Add(trajectoryStartingPosition);
 
+        // Insert bounce off points.
+        var motion = aiming * shootStrength;
         var bounceOffPoints = CalculateBounceOffPoints(ref motion);
         trajectoryPoints.AddRange(bounceOffPoints);
 
+        // Add the last calculated reflection as where we left from.
         var ballStopPosition = trajectoryPoints.Last() + motion;
         trajectoryPoints.Add(ballStopPosition);
 
@@ -59,6 +79,7 @@ public class BallPhysics : MonoBehaviour
             {
                 bounceOffPoints.Add(hit.point);
 
+                // Calculate reflection vector and update ray.
                 reflection = BounceOffDummy(hit, reflection);
                 ray.origin = hit.point;
                 ray.direction = reflection;
@@ -94,7 +115,7 @@ public class BallPhysics : MonoBehaviour
     {
         if (collider.CompareTag("GoalPost"))
         {
-            _ball.Score();
+            ball.Score();
         }
     }
 
@@ -102,44 +123,51 @@ public class BallPhysics : MonoBehaviour
     {
         for (int i = 0; i < points.Length; i++)
         {
-            if (i == points.Length - 1)
-                _rigidbody.drag = 1f;
+            // Slow down the ball before it arrives to the last position.
+            var isLastPoint = i == points.Length - 1;
+            if (isLastPoint)
+            {
+                ballRigidbody.drag = 1f;
+            }
 
-            yield return StartCoroutine(MoveBallToPoint(points[i]));
+            yield return MoveBallToPoint(points[i]);
         }
     }
 
     private IEnumerator MoveBallToPoint(Vector3 destination)
     {
         var origin = transform.position;
+
         var distanceX = destination.x - origin.x;
-        var distanceY = destination.y - origin.y;
+        var distanceY = destination.y - origin.y + hitTargetAtY;
         var distanceZ = destination.z - origin.z;
-
-        var minPeakHeight = 1f;
-        var maxPeakHeight = 8f;
         var horizontalDistance = new Vector3(distanceX, 0, distanceZ);
-        var peakHeight = Mathf.Lerp(minPeakHeight, maxPeakHeight, horizontalDistance.magnitude / 100);
 
-        var travelTime = Mathf.Sqrt(-2f * peakHeight / gravity) + Mathf.Sqrt(2f * (distanceY - peakHeight) / gravity);
-        var verticalVelocity = Vector3.up * Mathf.Sqrt(-2f * gravity * peakHeight);
+        var peakHeight = distanceY + peakHeightFromDistance(horizontalDistance.magnitude);
+
+        var travelTime = Mathf.Sqrt(-2f * peakHeight / Gravity) + Mathf.Sqrt(2f * (distanceY - peakHeight) / Gravity);
+
         var horizontalVelocity = horizontalDistance / travelTime;
+        var verticalVelocity = Vector3.up * Mathf.Sqrt(-2f * peakHeight * Gravity);
 
-        _rigidbody.velocity = verticalVelocity + horizontalVelocity;
+        ballRigidbody.velocity = verticalVelocity + horizontalVelocity;
 
         var waitForBallToMove = new WaitForSeconds(travelTime);
         yield return waitForBallToMove;
     }
 
-    public void UpdateGravity(float gravity)
+    private float peakHeightFromDistance(float distance)
     {
-        Physics.gravity = Vector3.up * gravity;
+        var distanceInRange = Mathf.InverseLerp(0, shootStrength, distance);
+        var distanceMapped = Mathf.Lerp(0, 1, distanceInRange);
+
+        return Mathf.Lerp(minPeakHeight, maxPeakHeight, distanceMapped);
     }
 
     public void ResetPhysics()
     {
-        _rigidbody.velocity = Vector3.zero;
-        _rigidbody.angularVelocity = Vector3.zero;
-        _rigidbody.drag = 0f;
+        ballRigidbody.velocity = Vector3.zero;
+        ballRigidbody.angularVelocity = Vector3.zero;
+        ballRigidbody.drag = 0f;
     }
 }
