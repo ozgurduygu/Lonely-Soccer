@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class RotatingDummy : Dummy
 {
+    [SerializeField] private int directionSelector = 0;
     [SerializeField] private List<float> directions = new List<float> { 0f, 45f, 90f };
-    private int _directionSelector = 1;
-
-    private Vector3 _localNormal = Vector3.forward;
 
     private bool _shouldRotate;
     private bool _hasTouched;
+
+    private Vector3 _localNormal = Vector3.forward;
 
     public override Vector3 Bounce(Vector3 entryVector)
     {
@@ -19,14 +19,32 @@ public class RotatingDummy : Dummy
 
     public override void Interact(Vector3 position)
     {
-        var selector = _directionSelector % directions.Count;
-        var direction = directions[selector];
-
-        transform.rotation = Quaternion.Euler(0, direction, 0);
-
-        _directionSelector++;
+        directionSelector++;
+        UpdateDirection();
     }
 
+    private void UpdateDirection()
+    {
+        var selector = SelectorInRange(directionSelector);
+        var direction = directions[selector];
+        SetDirection(direction);
+    }
+
+    private int SelectorInRange(int selector)
+    {
+        return Mathf.Abs(selector) % directions.Count;
+    }
+
+    private void SetDirection(float direction)
+    {
+        transform.rotation = Quaternion.Euler(0, direction, 0);
+    }
+    
+    private void OnValidate()
+    {
+        UpdateDirection();
+    }
+    
     public void OnTouchBegin(Vector3 position, bool isTouched)
     {
         _hasTouched = isTouched;
@@ -46,10 +64,5 @@ public class RotatingDummy : Dummy
 
         _hasTouched = false;
         _shouldRotate = false;
-    }
-
-    private void OnValidate()
-    {
-        transform.rotation = Quaternion.Euler(0, directions[0], 0);
     }
 }

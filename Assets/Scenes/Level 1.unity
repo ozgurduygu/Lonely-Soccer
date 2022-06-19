@@ -353,6 +353,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3833057325030028985}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &2024908606 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 89691591145200237, guid: 7f21ffecd04e4be4fa3a22f46e4174c9,
+    type: 3}
+  m_PrefabInstance: {fileID: 89691591333733842}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2031301206 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 948958084015744431, guid: 113ca0fa05b3889479b8d9097a5a3123,
@@ -426,6 +432,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 89691591145200236, guid: 7f21ffecd04e4be4fa3a22f46e4174c9,
+        type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 2024908606}
     - target: {fileID: 89691591498681045, guid: 7f21ffecd04e4be4fa3a22f46e4174c9,
         type: 3}
       propertyPath: LightsModule.light
@@ -632,6 +643,11 @@ PrefabInstance:
     - target: {fileID: 972270864167171040, guid: dd1313769169bee4a9618c0837df9ba7,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 972270864167171046, guid: dd1313769169bee4a9618c0837df9ba7,
+        type: 3}
+      propertyPath: directionSelector
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 972270864167171052, guid: dd1313769169bee4a9618c0837df9ba7,

@@ -242,12 +242,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4cf50f824c472d44b4b608035359d13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelManager: {fileID: 0}
+  trajectory: {fileID: 89691591145200236}
   ballPhysics: {fileID: 89691590345504220}
   cameraController: {fileID: 0}
   scoreParticles: {fileID: 89691591498681045}
   trailRenderer: {fileID: 89691590205358610}
-  trajectory: {fileID: 89691591145200236}
+  ballStopWaitTime: 0
 --- !u!114 &89691590345504220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443,8 +443,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e63959f4ebdc34b8e851afb1f5c47136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 89691591145200237}
   lineRenderer: {fileID: 89691591145200238}
-  _animator: {fileID: 89691591145200237}
 --- !u!95 &89691591145200237
 Animator:
   serializedVersion: 4

@@ -29,7 +29,6 @@ public class LevelManager : MonoBehaviour
 
     public static void LoadLevel(int level = 0)
     {
-        TouchController.active = true;
         SceneManager.LoadScene(level);
     }
 }

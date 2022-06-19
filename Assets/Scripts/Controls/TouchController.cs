@@ -17,7 +17,7 @@ public class TouchController : MonoBehaviour
 
     private void Update()
     {
-        if(!active)
+        if (!active)
             return;
 
         var position = Input.mousePosition;
@@ -25,8 +25,8 @@ public class TouchController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             _isDragging = true;
-            
-            if(OnTouchBegin != null)
+
+            if (OnTouchBegin != null)
             {
                 UpdateActiveTouchable(position);
                 OnTouchBegin(position);
@@ -36,7 +36,7 @@ public class TouchController : MonoBehaviour
         {
             _isDragging = false;
 
-            if(OnTouchComplete != null)
+            if (OnTouchComplete != null)
             {
                 ClearActiveTouchable();
                 OnTouchComplete(position);
@@ -44,7 +44,7 @@ public class TouchController : MonoBehaviour
         }
         else if (_isDragging)
         {
-            if(OnTouchDrag != null)
+            if (OnTouchDrag != null)
             {
                 UpdateActiveTouchable(position);
                 OnTouchDrag(position);
@@ -54,7 +54,7 @@ public class TouchController : MonoBehaviour
 
     private void ClearActiveTouchable()
     {
-        if(activeTouchable != null)
+        if (activeTouchable != null)
         {
             activeTouchable.isTouched = false;
         }
@@ -67,25 +67,33 @@ public class TouchController : MonoBehaviour
         var hit = HitCheck(position);
 
         var touchable = hit.collider.gameObject.GetComponent<Touchable>();
-        
-        if(touchable != null)
+
+        ClearActiveTouchable();
+
+        if (touchable != null)
         {
             touchable.isTouched = true;
             activeTouchable = touchable;
         }
-        else
-        {
-            ClearActiveTouchable();
-        }
-    }    
+    }
 
     private static RaycastHit HitCheck(Vector3 position)
     {
         RaycastHit hit;
         var ray = Camera.main.ScreenPointToRay(position);
-        
+
         Physics.SphereCast(ray, touchTolerance, out hit);
 
         return hit;
+    }
+
+    public static float InputFactoredByAngle(float angle)
+    {
+        var radian = angle * Mathf.Deg2Rad;
+
+        var inputX = Input.GetAxis("Mouse X") * Mathf.Cos(radian);
+        var inputY = Input.GetAxis("Mouse Y") * Mathf.Sin(radian) * -1;
+
+        return inputX + inputY;
     }
 }

@@ -23,34 +23,37 @@ public class Ball : MonoBehaviour
 
     public void Shoot()
     {
+        // Disable input for the duration of shoot.
         TouchController.active = false;
-        
-        var points = trajectory.ProcessTrajectory();
 
         _cachedPosition = transform.position;
 
+        var points = trajectory.ProcessTrajectory();
         var coroutine = ShootBallCoroutine(points);
         StartCoroutine(coroutine);
     }
 
     private IEnumerator ShootBallCoroutine(Vector3[] points)
-    {   
-        yield return cameraController.CameraToTargetCoroutine(CameraController.Camera.ball, cameraController.WaitForCamera);
+    {
+        var topCam = CameraController.Camera.top;
+        var ballCam = CameraController.Camera.ball;
+        var waitForCam = cameraController.WaitForCamera;
 
+        // Wait for Camera to switch to ball.
+        yield return cameraController.CameraToTargetCoroutine(ballCam, waitForCam);
+
+        // Shoot the ball.
         var moveBallCoroutine = ballPhysics.MoveBallCoroutine(points);
         yield return moveBallCoroutine;
 
+        // Wait a little after the move ends.
         var waitForBallToStop = new WaitForSeconds(ballStopWaitTime);
         yield return waitForBallToStop;
 
-        if(_hasScored)
-        {
-            LevelManager.LoadLevel(LevelManager.NextLevel);
-        }
+        // Wait for Camera to switch back to top view.
+        yield return cameraController.CameraToTargetCoroutine(topCam, waitForCam);
 
-        yield return cameraController.CameraToTargetCoroutine(CameraController.Camera.top, cameraController.WaitForCamera);
-
-        Reset();
+        FinishShoot();
     }
 
     public void Score()
@@ -60,10 +63,21 @@ public class Ball : MonoBehaviour
         _hasScored = true;
     }
 
-    public void Reset()
+    private void FinishShoot()
     {
         TouchController.active = true;
-        transform.SetPositionAndRotation(_cachedPosition, Quaternion.Euler(0, 0, 0));
+
+        if (_hasScored)
+        {
+            LevelManager.LoadLevel(LevelManager.NextLevel);
+        }
+
+        Reset();
+    }
+
+    private void Reset()
+    {
+        transform.SetPositionAndRotation(_cachedPosition, Quaternion.Euler(0f, 0f, 0f));
         ballPhysics.ResetPhysics();
         trailRenderer.Clear();
     }

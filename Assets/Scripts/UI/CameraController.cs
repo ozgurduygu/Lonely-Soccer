@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private CinemachineVirtualCamera topCamera, ballCamera;
     [SerializeField] private CinemachineBrain cinemachineBrain;
+    [SerializeField] private CinemachineVirtualCamera topCamera, ballCamera;
 
     public enum Camera
     {

@@ -1,16 +1,19 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Trajectory : MonoBehaviour
 {
+    [SerializeField] private Animator animator;
     [SerializeField] private LineRenderer lineRenderer;
 
     private List<Vector3> _points = new List<Vector3>();
 
-    public List<Vector3> Points { get => _points; set => _points = value; }
+    public List<Vector3> Points
+    {
+        get => _points;
+        set => _points = value;
+    }
 
-    public Animator _animator;
 
     public void Draw()
     {
@@ -31,21 +34,21 @@ public class Trajectory : MonoBehaviour
 
     public void FadeIn()
     {
-        _animator.ResetTrigger("FadeOut");
-        _animator.SetTrigger("FadeIn");
+        animator.ResetTrigger("FadeOut");
+        animator.SetTrigger("FadeIn");
     }
 
     public void FadeOut()
-    {   
-        _animator.ResetTrigger("FadeIn");
-        _animator.SetTrigger("FadeOut");
+    {
+        animator.ResetTrigger("FadeIn");
+        animator.SetTrigger("FadeOut");
     }
 
     public Vector3[] ProcessTrajectory()
     {
+        // Ignore starting point.
         _points.RemoveAt(0);
-        var points = _points.ToArray();
 
-        return points;
+        return _points.ToArray();
     }
 }

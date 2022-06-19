@@ -2,22 +2,20 @@ using UnityEngine;
 
 public class SlidingDummy : RotatingDummy
 {
-    [Range(-1f, 1f)]
-    [SerializeField] private float slidePosition = 0f;
-
+    [Range(-1f, 1f)] [SerializeField] private float slidePosition = 0f;
     [SerializeField] private float slideScalar = 2f;
-
     [SerializeField] private float inputSensitivity = 0.3f;
 
     private Vector3 _cachedPosition;
-
     private LineRenderer _lineRenderer;
-
     private bool _shouldSlide;
 
     public override void Interact(Vector3 position)
     {
-        slidePosition -= Input.GetAxis("Mouse Y") * inputSensitivity;
+        var angle = transform.rotation.eulerAngles.y;
+        var input = TouchController.InputFactoredByAngle(angle);
+
+        slidePosition += input * inputSensitivity;
         ApplySlidePosition();
     }
 

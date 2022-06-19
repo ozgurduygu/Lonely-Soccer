@@ -3,10 +3,8 @@ using UnityEngine;
 
 public class CursorDisplayer : MonoBehaviour
 {   
-    [SerializeField] private float cursorReturnSpeed = 500;
-
+    [SerializeField] private float cursorReturnSpeed = 500f;
     [SerializeField] private Animator cursorAnimator;
-
     [SerializeField] private RectTransform backgroundRectTransform;
     [SerializeField] private RectTransform pointerRectTransform;
 
@@ -21,7 +19,7 @@ public class CursorDisplayer : MonoBehaviour
     
     private void Start()
     {
-        _pointerBoundaryRadius = (backgroundRectTransform.rect.width - pointerRectTransform.rect.width) / 2;
+        _pointerBoundaryRadius = (backgroundRectTransform.rect.width - pointerRectTransform.rect.width) / 2f;
     }
 
     public void CursorDragStart()
@@ -44,7 +42,8 @@ public class CursorDisplayer : MonoBehaviour
 
     public void SetCursorPosition(Vector2 position)
     {
-        var offset = Vector2.ClampMagnitude(position - _backgroundPosition, _pointerBoundaryRadius);
+        var distance = position - _backgroundPosition;
+        var offset = Vector2.ClampMagnitude(distance, _pointerBoundaryRadius);
 
         _pointerPosition = _backgroundPosition + offset;
         pointerRectTransform.anchoredPosition = _pointerPosition;
@@ -55,7 +54,6 @@ public class CursorDisplayer : MonoBehaviour
         while (_pointerPosition != _backgroundPosition)
         {
             _pointerPosition = pointerRectTransform.anchoredPosition;
-            
             pointerRectTransform.anchoredPosition = Vector2.MoveTowards(_pointerPosition, _backgroundPosition, cursorReturnSpeed * Time.deltaTime);
             
             yield return null;
