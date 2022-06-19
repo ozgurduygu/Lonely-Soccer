@@ -5,14 +5,16 @@ using UnityEngine;
 
 public class BallPhysics : MonoBehaviour
 {
+    [SerializeField] private int maxTrajectoryBounce = 12;
+    [SerializeField] private float shootStrength = 40f;
+    [SerializeField] private float hitTargetAtY = 2f;
+    [SerializeField] private float minPeakHeight = 0.1f;
+    [SerializeField] private float maxPeakHeight = 8f;
+
     [SerializeField] private Ball ball;
     [SerializeField] private Rigidbody ballRigidbody;
-
-    [SerializeField] private int maxTrajectoryBounce = 12;
-
-    [SerializeField] public float shootStrength = 40f;
-
-    [SerializeField] public float gravity = -100f;
+    
+    [SerializeField] private float gravity = -100f;
 
     private float Gravity
     {
@@ -24,11 +26,6 @@ public class BallPhysics : MonoBehaviour
             Physics.gravity = Vector3.up * gravity;
         }
     }
-
-    [SerializeField] float hitTargetAtY = 2f;
-    [SerializeField] float minPeakHeight = 0.1f;
-    [SerializeField] float maxPeakHeight = 8f;
-
 
     private LayerMask _dummiesLayerMask;
 
@@ -106,19 +103,6 @@ public class BallPhysics : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider collider)
-    {
-        CheckGoalPostHit(collider);
-    }
-
-    private void CheckGoalPostHit(Collider collider)
-    {
-        if (collider.CompareTag("GoalPost"))
-        {
-            ball.Score();
-        }
-    }
-
     public IEnumerator MoveBallCoroutine(Vector3[] points)
     {
         for (int i = 0; i < points.Length; i++)
@@ -143,6 +127,7 @@ public class BallPhysics : MonoBehaviour
         var distanceZ = destination.z - origin.z;
         var horizontalDistance = new Vector3(distanceX, 0, distanceZ);
 
+        // Set the Peak Height to be higher further the destination is.
         var peakHeight = distanceY + peakHeightFromDistance(horizontalDistance.magnitude);
 
         var travelTime = Mathf.Sqrt(-2f * peakHeight / Gravity) + Mathf.Sqrt(2f * (distanceY - peakHeight) / Gravity);
@@ -158,10 +143,23 @@ public class BallPhysics : MonoBehaviour
 
     private float peakHeightFromDistance(float distance)
     {
-        var distanceInRange = Mathf.InverseLerp(0, shootStrength, distance);
-        var distanceMapped = Mathf.Lerp(0, 1, distanceInRange);
+        var distanceInRange = Mathf.InverseLerp(0f, shootStrength, distance);
+        var distanceMapped = Mathf.Lerp(0f, 1f, distanceInRange);
 
         return Mathf.Lerp(minPeakHeight, maxPeakHeight, distanceMapped);
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        CheckGoalPostHit(collider);
+    }
+
+    private void CheckGoalPostHit(Collider collider)
+    {
+        if (collider.CompareTag("GoalPost"))
+        {
+            ball.Score();
+        }
     }
 
     public void ResetPhysics()

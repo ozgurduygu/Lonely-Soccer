@@ -14,7 +14,9 @@ public class RotatingDummy : Dummy
     public override Vector3 Bounce(Vector3 entryVector)
     {
         var worldNormal = transform.rotation * _localNormal;
-        return Vector3.Reflect(entryVector, worldNormal);
+        
+        var reflection = Vector3.Reflect(entryVector, worldNormal);
+        return reflection;
     }
 
     public override void Interact(Vector3 position)

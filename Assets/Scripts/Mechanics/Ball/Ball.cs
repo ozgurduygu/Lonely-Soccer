@@ -59,7 +59,6 @@ public class Ball : MonoBehaviour
     public void Score()
     {
         scoreParticles.Play();
-
         _hasScored = true;
     }
 
